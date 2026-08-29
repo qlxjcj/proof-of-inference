@@ -1,0 +1,11 @@
+# gltest configuration file
+
+networks:
+  default: testnet_bradbury
+  testnet_bradbury:
+    url: https://rpc-bradbury.genlayer.com
+    chain_type: testnet_bradbury
+
+paths:
+  contracts: .
+  artifacts: artifacts

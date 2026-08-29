@@ -1,0 +1,7 @@
+{
+  "network": "testnet_bradbury",
+  "address": "0x15b351d1E9D3A6EC609CdF65d911dB32685bE1e3",
+  "contract": "proof_of_inference.py",
+  "deployer": "0x6F33Ec301a78D31BeEe47eeeAA5Db5cD4da78959",
+  "explorer": "https://explorer-bradbury.genlayer.com/address/0x15b351d1E9D3A6EC609CdF65d911dB32685bE1e3"
+}
