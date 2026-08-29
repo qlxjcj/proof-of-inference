@@ -547,6 +547,269 @@ body {
   .btn-grid { grid-template-columns: 1fr; }
   .role-selector { grid-template-columns: 1fr; }
   .guide-content { grid-template-columns: 1fr; }
+  .workflow-grid { grid-template-columns: 1fr; }
+  .workflow-arrow { transform: rotate(90deg); }
+  .features-grid { grid-template-columns: 1fr; }
+  .usecases-grid { grid-template-columns: 1fr; }
+  .tech-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Hero Section */
+.hero-section {
+  text-align: center;
+  padding: 80px 0 60px;
+  position: relative;
+}
+
+.hero-badge {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 6px 16px;
+  margin-bottom: 24px;
+}
+
+.hero-title {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 24px;
+  background: linear-gradient(180deg, #fff 0%, #888 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-desc {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.hero-stat {
+  text-align: center;
+}
+
+.hero-stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.hero-stat-label {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-top: 4px;
+}
+
+/* How It Works */
+.how-it-works {
+  background: rgba(10,10,15,0.9);
+  border: 1px solid var(--border);
+  padding: 40px;
+  margin-bottom: 40px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.section-icon {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.section-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.workflow-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.workflow-step {
+  flex: 1;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  padding: 24px;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.workflow-step:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+}
+
+.step-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.step-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.step-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.step-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.workflow-arrow {
+  font-size: 24px;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Features */
+.features-section {
+  margin-bottom: 40px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.feature-card {
+  background: rgba(10,10,15,0.9);
+  border: 1px solid var(--border);
+  padding: 24px;
+  transition: all 0.3s;
+}
+
+.feature-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+}
+
+.feature-icon {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.feature-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.feature-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Use Cases */
+.usecases-section {
+  margin-bottom: 40px;
+}
+
+.usecases-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.usecase-card {
+  background: rgba(10,10,15,0.9);
+  border: 1px solid var(--border);
+  padding: 24px;
+  transition: all 0.3s;
+}
+
+.usecase-card:hover {
+  border-color: var(--accent2);
+  transform: translateY(-4px);
+}
+
+.usecase-icon {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.usecase-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--accent2);
+  margin-bottom: 8px;
+}
+
+.usecase-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Tech Details */
+.tech-section {
+  margin-bottom: 40px;
+}
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+.tech-card {
+  background: rgba(10,10,15,0.9);
+  border: 1px solid var(--border);
+  padding: 16px;
+  text-align: center;
+}
+
+.tech-label {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.tech-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
 }
 </style>
 </head>
@@ -573,6 +836,160 @@ body {
     </div>
     <button class="connect-btn" id="connectBtn">CONNECT WALLET</button>
   </header>
+
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">AGENT TANK HACKATHON</div>
+      <h1 class="hero-title">Mine by Doing<br><span style="color: var(--accent);">Useful AI Work</span></h1>
+      <p class="hero-desc">Proof of Inference is a mining protocol where miners earn ETH by completing AI inference tasks instead of computing useless hashes. The agentic economy needs verifiable AI work — we make it happen.</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value">35</div>
+          <div class="hero-stat-label">Tests Passing</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">5/5</div>
+          <div class="hero-stat-label">Validators Agree</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">Live</div>
+          <div class="hero-stat-label">On Testnet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How It Works -->
+  <div class="how-it-works">
+    <div class="section-header">
+      <div class="section-icon">⚡</div>
+      <div class="section-title">How It Works</div>
+    </div>
+    <div class="workflow-grid">
+      <div class="workflow-step">
+        <div class="step-number">01</div>
+        <div class="step-icon">🎯</div>
+        <div class="step-title">Post Task</div>
+        <div class="step-desc">Creator posts an AI inference task with ETH bounty. Data stored on IPFS for privacy.</div>
+      </div>
+      <div class="workflow-arrow">→</div>
+      <div class="workflow-step">
+        <div class="step-number">02</div>
+        <div class="step-icon">⚡</div>
+        <div class="step-title">Miners Compete</div>
+        <div class="step-desc">Miners download data, run AI inference (GPT-4, Claude, etc), submit results.</div>
+      </div>
+      <div class="workflow-arrow">→</div>
+      <div class="workflow-step">
+        <div class="step-number">03</div>
+        <div class="step-icon">✓</div>
+        <div class="step-title">Consensus</div>
+        <div class="step-desc">5 independent validators verify results through AI consensus. Best result wins.</div>
+      </div>
+      <div class="workflow-arrow">→</div>
+      <div class="workflow-step">
+        <div class="step-number">04</div>
+        <div class="step-icon">💰</div>
+        <div class="step-title">Get Paid</div>
+        <div class="step-desc">Winner receives ETH bounty. Reputation score increases. Creator gets verified result.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Features -->
+  <div class="features-section">
+    <div class="section-header">
+      <div class="section-icon">★</div>
+      <div class="section-title">Key Features</div>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">Privacy First</div>
+        <div class="feature-desc">Input data never touches the chain. Only IPFS hashes and results are stored on-chain. Your data stays private.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏆</div>
+        <div class="feature-title">Reputation System</div>
+        <div class="feature-desc">Miners build reputation over time. Higher reputation means priority access and more earnings potential.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤝</div>
+        <div class="feature-title">AI Consensus</div>
+        <div class="feature-desc">5 independent validators verify every result. No single point of failure. Trustless verification.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <div class="feature-title">Bounty Economics</div>
+        <div class="feature-desc">Creators set bounties. Miners compete for rewards. Only the best result gets paid. Fair market pricing.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Use Cases -->
+  <div class="usecases-section">
+    <div class="section-header">
+      <div class="section-icon">◎</div>
+      <div class="section-title">Use Cases</div>
+    </div>
+    <div class="usecases-grid">
+      <div class="usecase-card">
+        <div class="usecase-icon">👜</div>
+        <div class="usecase-title">Luxury Authentication</div>
+        <div class="usecase-desc">Verify luxury goods authenticity through AI image analysis. Protect serial numbers with privacy.</div>
+      </div>
+      <div class="usecase-card">
+        <div class="usecase-icon">📄</div>
+        <div class="usecase-title">Document Analysis</div>
+        <div class="usecase-desc">Analyze contracts, reports, and legal documents. Get compliance verdicts without exposing content.</div>
+      </div>
+      <div class="usecase-card">
+        <div class="usecase-icon">🏥</div>
+        <div class="usecase-title">Medical Diagnosis</div>
+        <div class="usecase-desc">AI-powered medical image analysis. Patient data stays private. Only diagnosis results on-chain.</div>
+      </div>
+      <div class="usecase-card">
+        <div class="usecase-icon">🛡️</div>
+        <div class="usecase-title">Content Moderation</div>
+        <div class="usecase-desc">Detect harmful content at scale. Platform pays bounties. Miners compete for accuracy.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Technical Details -->
+  <div class="tech-section">
+    <div class="section-header">
+      <div class="section-icon">&lt;/&gt;</div>
+      <div class="section-title">Technical Details</div>
+    </div>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-label">Smart Contract</div>
+        <div class="tech-value">GenLayer Python</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Consensus</div>
+        <div class="tech-value">AI Comparative</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Storage</div>
+        <div class="tech-value">IPFS + On-chain</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Network</div>
+        <div class="tech-value">Testnet Bradbury</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Contract</div>
+        <div class="tech-value" style="font-size:10px;">0x15b3...1e3</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Tests</div>
+        <div class="tech-value">35/35 Passing</div>
+      </div>
+    </div>
+  </div>
 
   <!-- Role Selector -->
   <div class="role-selector">
