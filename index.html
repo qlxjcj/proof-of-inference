@@ -17,6 +17,8 @@
   --accent2: #00ccff;
   --accent3: #ff0080;
   --glow: rgba(0,255,136,0.15);
+  --creator: #00ccff;
+  --miner: #ff0080;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,7 +31,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Animated Grid Background */
 .grid-bg {
   position: fixed;
   inset: 0;
@@ -46,16 +47,7 @@ body {
   100% { transform: translate(50px, 50px); }
 }
 
-/* Floating Orbs */
-.orb {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.3;
-  pointer-events: none;
-  animation: float 20s ease-in-out infinite;
-}
-
+.orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.3; pointer-events: none; animation: float 20s ease-in-out infinite; }
 .orb1 { width: 400px; height: 400px; background: #00ff88; top: -100px; left: -100px; }
 .orb2 { width: 300px; height: 300px; background: #00ccff; bottom: -50px; right: -50px; animation-delay: -7s; }
 .orb3 { width: 200px; height: 200px; background: #ff0080; top: 50%; left: 50%; animation-delay: -14s; }
@@ -66,7 +58,6 @@ body {
   66% { transform: translate(-30px, 30px) scale(0.9); }
 }
 
-/* Scanline Effect */
 .scanline {
   position: fixed;
   top: 0;
@@ -84,29 +75,12 @@ body {
   100% { top: 100vh; }
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
-  position: relative;
-  z-index: 10;
-}
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 10; }
 
 /* Header */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 0;
-  margin-bottom: 40px;
-  border-bottom: 1px solid var(--border);
-}
+.header { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; margin-bottom: 40px; border-bottom: 1px solid var(--border); }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
+.logo { display: flex; align-items: center; gap: 16px; }
 
 .logo-icon {
   width: 48px;
@@ -134,41 +108,18 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-.logo-sub {
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 2px;
-  margin-top: 2px;
-}
+.logo-sub { font-size: 11px; color: var(--muted); letter-spacing: 2px; margin-top: 2px; }
 
-/* Status Bar */
-.status-bar {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: pulse 2s ease-in-out infinite;
-}
+.status-bar { display: flex; gap: 6px; align-items: center; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 2s ease-in-out infinite; }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--glow); }
   50% { opacity: 0.5; box-shadow: 0 0 20px 10px var(--glow); }
 }
 
-.status-text {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: var(--accent);
-  letter-spacing: 2px;
-}
+.status-text { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; }
 
-/* Connect Button */
 .connect-btn {
   background: transparent;
   border: 1px solid var(--accent);
@@ -178,8 +129,6 @@ body {
   font-size: 12px;
   letter-spacing: 2px;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
   transition: all 0.3s;
 }
 
@@ -189,67 +138,206 @@ body {
   box-shadow: 0 0 30px var(--glow);
 }
 
-.connect-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s;
-}
-
-.connect-btn:hover::before {
-  left: 100%;
-}
-
-/* Stats Grid */
-.stats {
+/* Role Selector */
+.role-selector {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
   margin-bottom: 40px;
 }
+
+.role-card {
+  background: rgba(10,10,15,0.9);
+  border: 2px solid var(--border);
+  padding: 40px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.role-card:hover {
+  transform: translateY(-4px);
+}
+
+.role-card.active {
+  border-color: var(--role-color);
+  box-shadow: 0 0 40px rgba(var(--role-color-rgb), 0.2);
+}
+
+.role-card.active::before {
+  content: 'ACTIVE';
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--role-color);
+  border: 1px solid var(--role-color);
+  padding: 4px 8px;
+}
+
+.role-card.creator { --role-color: var(--creator); --role-color-rgb: 0,204,255; }
+.role-card.miner { --role-color: var(--miner); --role-color-rgb: 255,0,128; }
+
+.role-icon {
+  width: 64px;
+  height: 64px;
+  border: 2px solid var(--role-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.role-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--role-color);
+  margin-bottom: 12px;
+}
+
+.role-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.role-steps {
+  list-style: none;
+  counter-reset: step;
+}
+
+.role-steps li {
+  counter-increment: step;
+  padding: 8px 0;
+  padding-left: 32px;
+  position: relative;
+  font-size: 13px;
+  color: var(--text);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.role-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  background: var(--role-color);
+  color: #000;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Guide Section */
+.guide-section {
+  background: rgba(10,10,15,0.9);
+  border: 1px solid var(--border);
+  padding: 32px;
+  margin-bottom: 40px;
+  display: none;
+}
+
+.guide-section.visible { display: block; }
+
+.guide-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.guide-icon {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--guide-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.guide-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--guide-color);
+}
+
+.guide-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.guide-card {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border);
+  padding: 20px;
+}
+
+.guide-card h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--guide-color);
+  margin-bottom: 12px;
+}
+
+.guide-card p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.guide-card ul {
+  list-style: none;
+  margin-top: 12px;
+}
+
+.guide-card li {
+  padding: 6px 0;
+  padding-left: 20px;
+  position: relative;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.guide-card li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--guide-color);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 40px; }
 
 .stat-card {
   background: rgba(10,10,15,0.8);
   border: 1px solid var(--border);
   padding: 20px;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.3s;
 }
 
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
+.stat-card:hover { border-color: var(--accent); }
 
-.stat-card:hover::before {
-  opacity: 1;
-}
-
-.stat-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--accent);
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
+.stat-value { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.stat-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
 
 /* Cards */
 .card {
@@ -257,25 +345,10 @@ body {
   border: 1px solid var(--border);
   padding: 32px;
   margin-bottom: 24px;
-  position: relative;
+  transition: all 0.3s;
 }
 
-.card::after {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  right: -1px;
-  bottom: -1px;
-  background: linear-gradient(135deg, var(--accent), transparent, var(--accent2));
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.card:hover::after {
-  opacity: 0.1;
-}
+.card:hover { border-color: rgba(255,255,255,0.1); }
 
 .card-header {
   display: flex;
@@ -304,27 +377,11 @@ body {
   color: var(--accent);
 }
 
-/* Grid Layout */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
 
-/* Form Elements */
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-label {
-  display: block;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
+/* Form */
+.form-group { margin-bottom: 20px; }
+.form-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
 
 .form-input, .form-select, .form-textarea {
   width: 100%;
@@ -343,18 +400,9 @@ body {
   box-shadow: 0 0 20px var(--glow);
 }
 
-.form-textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-
-.form-select {
-  cursor: pointer;
-}
-
-.form-select option {
-  background: #000;
-}
+.form-textarea { min-height: 100px; resize: vertical; }
+.form-select { cursor: pointer; }
+.form-select option { background: #000; }
 
 /* Buttons */
 .btn {
@@ -369,8 +417,6 @@ body {
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s;
-  position: relative;
-  overflow: hidden;
 }
 
 .btn-primary {
@@ -394,21 +440,12 @@ body {
 .btn-outline:hover {
   border-color: var(--accent);
   color: var(--accent);
-  box-shadow: 0 0 20px var(--glow);
 }
 
-.btn-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
+.btn-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 
-/* Range Input */
-.range-container {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
+/* Range */
+.range-container { display: flex; align-items: center; gap: 16px; }
 
 .range-input {
   flex: 1;
@@ -428,13 +465,7 @@ body {
   box-shadow: 0 0 10px var(--glow);
 }
 
-.range-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 24px;
-  color: var(--accent);
-  min-width: 60px;
-  text-align: right;
-}
+.range-value { font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--accent); min-width: 60px; text-align: right; }
 
 /* Result Box */
 .result-box {
@@ -449,9 +480,7 @@ body {
   display: none;
 }
 
-.result-box.visible {
-  display: block;
-}
+.result-box.visible { display: block; }
 
 /* Task List */
 .task-item {
@@ -463,23 +492,10 @@ body {
   transition: all 0.3s;
 }
 
-.task-item:hover {
-  border-color: var(--accent);
-  box-shadow: 0 0 20px var(--glow);
-}
+.task-item:hover { border-color: var(--accent); box-shadow: 0 0 20px var(--glow); }
 
-.task-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.task-id {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  color: var(--accent);
-}
+.task-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.task-id { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--accent); }
 
 .task-status {
   font-family: 'JetBrains Mono', monospace;
@@ -495,19 +511,8 @@ body {
 .task-status.completed { border-color: var(--accent); color: var(--accent); }
 .task-status.failed { border-color: var(--accent3); color: var(--accent3); }
 
-.task-desc {
-  font-size: 14px;
-  color: var(--text);
-  margin-bottom: 12px;
-}
-
-.task-meta {
-  display: flex;
-  gap: 16px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: var(--muted);
-}
+.task-desc { font-size: 14px; color: var(--text); margin-bottom: 12px; }
+.task-meta { display: flex; gap: 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
 
 /* Toast */
 .toast {
@@ -522,17 +527,8 @@ body {
   animation: slideIn 0.3s ease-out;
 }
 
-.toast.success {
-  background: rgba(0,255,136,0.1);
-  border: 1px solid var(--accent);
-  color: var(--accent);
-}
-
-.toast.error {
-  background: rgba(255,0,128,0.1);
-  border: 1px solid var(--accent3);
-  color: var(--accent3);
-}
+.toast.success { background: rgba(0,255,136,0.1); border: 1px solid var(--accent); color: var(--accent); }
+.toast.error { background: rgba(255,0,128,0.1); border: 1px solid var(--accent3); color: var(--accent3); }
 
 @keyframes slideIn {
   from { transform: translateX(100%); opacity: 0; }
@@ -540,82 +536,21 @@ body {
 }
 
 /* Footer */
-.footer {
-  text-align: center;
-  padding: 40px 0;
-  border-top: 1px solid var(--border);
-  margin-top: 40px;
-}
-
-.footer-text {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 2px;
-}
-
-.footer-addr {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: var(--accent);
-  margin-top: 8px;
-  opacity: 0.5;
-}
+.footer { text-align: center; padding: 40px 0; border-top: 1px solid var(--border); margin-top: 40px; }
+.footer-text { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 2px; }
+.footer-addr { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); margin-top: 8px; opacity: 0.5; }
 
 /* Responsive */
 @media (max-width: 768px) {
   .stats { grid-template-columns: repeat(2, 1fr); }
   .grid { grid-template-columns: 1fr; }
   .btn-grid { grid-template-columns: 1fr; }
-}
-
-/* Glitch Effect */
-.glitch {
-  position: relative;
-}
-
-.glitch::before,
-.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.glitch::before {
-  animation: glitch1 2s infinite linear alternate-reverse;
-  clip: polygon(0 0, 100% 0, 100% 33%, 0 33%);
-  -webkit-text-stroke: 0;
-}
-
-.glitch::after {
-  animation: glitch2 2s infinite linear alternate-reverse;
-  clip: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
-}
-
-@keyframes glitch1 {
-  0% { transform: translate(0); }
-  20% { transform: translate(-2px, 2px); }
-  40% { transform: translate(-2px, -2px); }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(2px, -2px); }
-  100% { transform: translate(0); }
-}
-
-@keyframes glitch2 {
-  0% { transform: translate(0); }
-  20% { transform: translate(2px, -2px); }
-  40% { transform: translate(2px, 2px); }
-  60% { transform: translate(-2px, -2px); }
-  80% { transform: translate(-2px, 2px); }
-  100% { transform: translate(0); }
+  .role-selector { grid-template-columns: 1fr; }
+  .guide-content { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
-<!-- Background Effects -->
 <div class="grid-bg"></div>
 <div class="orb orb1"></div>
 <div class="orb orb2"></div>
@@ -638,6 +573,141 @@ body {
     </div>
     <button class="connect-btn" id="connectBtn">CONNECT WALLET</button>
   </header>
+
+  <!-- Role Selector -->
+  <div class="role-selector">
+    <div class="role-card creator" id="creatorRole" onclick="selectRole('creator')">
+      <div class="role-icon">🎯</div>
+      <div class="role-title">Task Creator</div>
+      <div class="role-desc">Post AI inference tasks with ETH bounties. Get results from competitive miners.</div>
+      <ul class="role-steps">
+        <li>Describe your AI task</li>
+        <li>Upload data to IPFS</li>
+        <li>Set bounty amount</li>
+        <li>Wait for miners to compete</li>
+        <li>Get verified results</li>
+      </ul>
+    </div>
+    <div class="role-card miner" id="minerRole" onclick="selectRole('miner')">
+      <div class="role-icon">⚡</div>
+      <div class="role-title">Miner</div>
+      <div class="role-desc">Run AI inference tasks. Earn ETH bounties. Build your reputation.</div>
+      <ul class="role-steps">
+        <li>Browse open tasks</li>
+        <li>Download task data from IPFS</li>
+        <li>Run AI inference (GPT-4, Claude, etc)</li>
+        <li>Submit result + confidence</li>
+        <li>Win consensus, claim bounty</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Creator Guide -->
+  <div class="guide-section" id="creatorGuide" style="--guide-color: var(--creator);">
+    <div class="guide-header">
+      <div class="guide-icon">🎯</div>
+      <div class="guide-title">Task Creator Guide</div>
+    </div>
+    <div class="guide-content">
+      <div class="guide-card">
+        <h3>How It Works</h3>
+        <p>As a Task Creator, you post AI inference tasks with ETH bounties. Miners compete to complete your task. You get the best result.</p>
+        <ul>
+          <li>Describe what you need analyzed</li>
+          <li>Upload your data to IPFS</li>
+          <li>Set a bounty (higher = more miners)</li>
+          <li>Wait for miners to submit results</li>
+          <li>5 validators verify the best result</li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <h3>Tips for Success</h3>
+        <p>Maximize the quality of results you receive:</p>
+        <ul>
+          <li>Be specific in your task description</li>
+          <li>Provide clear data references</li>
+          <li>Set competitive bounties (0.01+ ETH)</li>
+          <li>Allow enough time (24+ hours)</li>
+          <li>Check miner reputation before hiring</li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <h3>Use Cases</h3>
+        <p>What you can use Proof of Inference for:</p>
+        <ul>
+          <li>Luxury goods authentication</li>
+          <li>Document analysis & verification</li>
+          <li>Image recognition tasks</li>
+          <li>Data classification</li>
+          <li>Content moderation</li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <h3>Cost & Privacy</h3>
+        <p>Understanding the economics and privacy:</p>
+        <ul>
+          <li>You only pay the winning miner</li>
+          <li>Data stays off-chain (IPFS only)</li>
+          <li>Results are verified by consensus</li>
+          <li>Cancel anytime before completion</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Miner Guide -->
+  <div class="guide-section" id="minerGuide" style="--guide-color: var(--miner);">
+    <div class="guide-header">
+      <div class="guide-icon">⚡</div>
+      <div class="guide-title">Miner Guide</div>
+    </div>
+    <div class="guide-content">
+      <div class="guide-card">
+        <h3>How It Works</h3>
+        <p>As a Miner, you earn ETH by running AI inference tasks. The more accurate your results, the more you earn.</p>
+        <ul>
+          <li>Browse open tasks in the Task List</li>
+          <li>Download task data from IPFS link</li>
+          <li>Run AI inference using your preferred model</li>
+          <li>Submit your result with confidence score</li>
+          <li>Win consensus to earn the bounty</li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <h3>Winning Strategy</h3>
+        <p>Maximize your earnings and reputation:</p>
+        <ul>
+          <li>Use multiple AI models for validation</li>
+          <li>Be honest about your confidence level</li>
+          <li>Focus on tasks in your expertise</li>
+          <li>Build reputation over time</li>
+          <li>Higher reputation = more task access</li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <h3>AI Tools You Can Use</h3>
+        <p>Any AI model works for inference:</p>
+        <ul>
+          <li>OpenAI GPT-4 / GPT-4 Vision</li>
+          <li>Anthropic Claude</li>
+          <li>Google Gemini</li>
+          <li>Local models (Llama, Mistral)</li>
+          <li>Specialized domain models</li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <h3>Earnings & Reputation</h3>
+        <p>Understanding the reward system:</p>
+        <ul>
+          <li>Win = Full bounty payment</li>
+          <li>Reputation score: 0-100</li>
+          <li>Win rate affects reputation</li>
+          <li>Higher reputation = priority access</li>
+          <li>Build track record over time</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
   <!-- Stats -->
   <div class="stats">
@@ -787,6 +857,8 @@ body {
   </footer>
 </div>
 
+<div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7/dist/ethers.umd.min.js"></script>
 <script>
 const CONTRACT = '0x15b351d1E9D3A6EC609CdF65d911dB32685bE1e3';
@@ -802,13 +874,26 @@ const ABI = [
   'function get_stats() view returns (tuple(uint256,uint256,uint256,uint256,uint256,uint256))',
   'function get_miner_profile(string) view returns (string)',
   'function get_miner_reputation(string) view returns (uint256)',
-  'function get_data_url(string) view returns (string)',
 ];
 
 let contract, account;
 const readProvider = new ethers.providers.JsonRpcProvider(RPC);
 const readContract = new ethers.Contract(CONTRACT, ABI, readProvider);
 
+// Role Selection
+function selectRole(role) {
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(role + 'Role').classList.add('active');
+  document.querySelectorAll('.guide-section').forEach(g => g.classList.remove('visible'));
+  document.getElementById(role + 'Guide').classList.add('visible');
+  localStorage.setItem('selectedRole', role);
+}
+
+// Load saved role
+const savedRole = localStorage.getItem('selectedRole') || 'creator';
+selectRole(savedRole);
+
+// Confidence slider
 document.getElementById('mineConfidence').addEventListener('input', e => {
   document.getElementById('confidenceValue').textContent = e.target.value;
 });
