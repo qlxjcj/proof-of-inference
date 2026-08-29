@@ -29,6 +29,7 @@ body {
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 .grid-bg {
@@ -540,6 +541,66 @@ body {
 .footer-text { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 2px; }
 .footer-addr { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); margin-top: 8px; opacity: 0.5; }
 
+/* Navigation */
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 40px;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: var(--accent);
+}
+
+.nav-logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  animation: rotate 10s linear infinite;
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  transition: all 0.3s;
+}
+
+.nav-link:hover {
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.nav-link.active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .stats { grid-template-columns: repeat(2, 1fr); }
@@ -557,7 +618,7 @@ body {
 /* Hero Section */
 .hero-section {
   text-align: center;
-  padding: 80px 0 60px;
+  padding: 120px 0 60px;
   position: relative;
 }
 
@@ -821,6 +882,21 @@ body {
 <div class="scanline"></div>
 
 <div class="container">
+  <!-- Navigation -->
+  <nav class="nav-bar">
+    <div class="nav-logo">
+      <div class="nav-logo-icon"></div>
+      <span>PROOF OF INFERENCE</span>
+    </div>
+    <div class="nav-links">
+      <a href="#what" class="nav-link active">WHAT</a>
+      <a href="#creators" class="nav-link">CREATORS</a>
+      <a href="#miners" class="nav-link">MINERS</a>
+      <a href="#guides" class="nav-link">GUIDES</a>
+    </div>
+    <button class="connect-btn" id="connectBtn">CONNECT WALLET</button>
+  </nav>
+
   <!-- Header -->
   <header class="header">
     <div class="logo">
@@ -838,7 +914,7 @@ body {
   </header>
 
   <!-- Hero Section -->
-  <div class="hero-section">
+  <div class="hero-section" id="what">
     <div class="hero-content">
       <div class="hero-badge">AGENT TANK HACKATHON</div>
       <h1 class="hero-title">Mine by Doing<br><span style="color: var(--accent);">Useful AI Work</span></h1>
@@ -992,7 +1068,7 @@ body {
   </div>
 
   <!-- Role Selector -->
-  <div class="role-selector">
+  <div class="role-selector" id="creators">
     <div class="role-card creator" id="creatorRole" onclick="selectRole('creator')">
       <div class="role-icon">🎯</div>
       <div class="role-title">Task Creator</div>
@@ -1005,7 +1081,7 @@ body {
         <li>Get verified results</li>
       </ul>
     </div>
-    <div class="role-card miner" id="minerRole" onclick="selectRole('miner')">
+    <div class="role-card miner" id="miners" onclick="selectRole('miner')">
       <div class="role-icon">⚡</div>
       <div class="role-title">Miner</div>
       <div class="role-desc">Run AI inference tasks. Earn ETH bounties. Build your reputation.</div>
@@ -1020,7 +1096,7 @@ body {
   </div>
 
   <!-- Creator Guide -->
-  <div class="guide-section" id="creatorGuide" style="--guide-color: var(--creator);">
+  <div class="guide-section" id="guides" style="--guide-color: var(--creator);">
     <div class="guide-header">
       <div class="guide-icon">🎯</div>
       <div class="guide-title">Task Creator Guide</div>
@@ -1519,6 +1595,27 @@ function toast(msg, type) {
 
 loadStats();
 loadTasks();
+
+// Active navigation link
+const sections = document.querySelectorAll('[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop;
+    if (scrollY >= sectionTop - 200) {
+      current = section.getAttribute('id');
+    }
+  });
+
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+});
 </script>
 </body>
 </html>
