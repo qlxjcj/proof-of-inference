@@ -92,8 +92,10 @@ class ProofOfInference(gl.Contract):
     tasks: TreeMap[str, str]
     submissions: TreeMap[str, str]
     miner_profiles: TreeMap[str, str]
+    active_miners: TreeMap[str, str]  # Track active miners
     task_count: u256
     total_mined: u256
+    total_miners: u256  # Total unique miners
     
     # POI Token reference
     poi_token: str
@@ -109,13 +111,38 @@ class ProofOfInference(gl.Contract):
 
     def __init__(self):
         self.total_mined = 0
+        self.total_miners = 0
         self.poi_token = ""  # Will be set after POI token deployment
         
-        # Reward amounts (1000, 500, 100, 50 POI with 18 decimals)
-        self.CREATOR_REWARD = 1000 * (10 ** 18)
-        self.WINNER_REWARD = 500 * (10 ** 18)
-        self.PARTICIPANT_REWARD = 100 * (10 ** 18)
-        self.VALIDATOR_REWARD = 50 * (10 ** 18)
+        # Reward amounts (100, 50, 10, 5 POI with 18 decimals)
+        self.CREATOR_REWARD = 100 * (10 ** 18)
+        self.WINNER_REWARD = 50 * (10 ** 18)
+        self.PARTICIPANT_REWARD = 10 * (10 ** 18)
+        self.VALIDATOR_REWARD = 5 * (10 ** 18)
+
+    def _get_validator_count(self) -> int:
+        """Dynamic validator count based on total miners"""
+        miners = self.total_miners
+        if miners < 10:
+            return 3
+        elif miners < 50:
+            return 5
+        elif miners < 100:
+            return 7
+        else:
+            return 10
+
+    def _get_max_miners_per_task(self) -> int:
+        """Max miners per task based on network size"""
+        miners = self.total_miners
+        if miners < 10:
+            return 3
+        elif miners < 50:
+            return 5
+        elif miners < 100:
+            return 7
+        else:
+            return 10
 
     @gl.public.write
     def set_poi_token(self, token_address: str):
@@ -195,6 +222,12 @@ class ProofOfInference(gl.Contract):
         sub_key = f"{task_id}:{sender.as_hex}"
         if self.submissions.get(sub_key, ""):
             raise gl.vm.UserError("Already submitted for this task")
+        
+        # Check if task is full (first-come-first-served)
+        max_miners = self._get_max_miners_per_task()
+        current_miners = task.get("miner_count", 0)
+        if current_miners >= max_miners:
+            raise gl.vm.UserError("Task is full, no more miners needed")
 
         submission = MinerSubmission(
             task_id=task_id,
@@ -205,10 +238,15 @@ class ProofOfInference(gl.Contract):
         )
         self.submissions[sub_key] = json.dumps(submission.__dict__)
 
-        task["miner_count"] = task.get("miner_count", 0) + 1
+        task["miner_count"] = current_miners + 1
         if task["status"] == "OPEN":
             task["status"] = "MINING"
         self.tasks[task_id] = json.dumps(task)
+        
+        # Track unique miners
+        if not self.active_miners.get(sender.as_hex, ""):
+            self.active_miners[sender.as_hex] = "active"
+            self.total_miners += 1
 
     @gl.public.write
     def verify_task(self, task_id: str):
@@ -218,8 +256,11 @@ class ProofOfInference(gl.Contract):
             raise gl.vm.UserError("Task not found")
         if task["status"] != "MINING":
             raise gl.vm.UserError("Task not in mining state")
-        if task.get("miner_count", 0) < 1:
-            raise gl.vm.UserError("No submissions to verify")
+        
+        # Check if enough miners submitted
+        min_miners = self._get_validator_count()
+        if task.get("miner_count", 0) < min_miners:
+            raise gl.vm.UserError(f"Need at least {min_miners} miners to verify")
 
         task["status"] = "VERIFYING"
         self.tasks[task_id] = json.dumps(task)
@@ -377,6 +418,9 @@ Respond ONLY in JSON:
             "mining_tasks": mining_tasks,
             "completed_tasks": completed_tasks,
             "total_mined": self.total_mined,
+            "total_miners": self.total_miners,
+            "validator_count": self._get_validator_count(),
+            "max_miners_per_task": self._get_max_miners_per_task(),
         }
 
     @gl.public.view

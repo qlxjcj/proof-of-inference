@@ -968,6 +968,36 @@ body {
   color: var(--accent);
   font-weight: 700;
 }
+
+/* Dynamic Info */
+.dynamic-info {
+  margin-top: 24px;
+  padding: 20px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.info-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+}
 </style>
 </head>
 <body>
@@ -1317,12 +1347,12 @@ body {
       <div class="stat-label">COMPLETED</div>
     </div>
     <div class="stat-card">
-      <div class="stat-value" id="statMined">0</div>
-      <div class="stat-label">TOTAL MINED</div>
+      <div class="stat-value" id="statMiners">0</div>
+      <div class="stat-label">TOTAL MINERS</div>
     </div>
     <div class="stat-card">
-      <div class="stat-value" id="statBounty">0</div>
-      <div class="stat-label">TOTAL BOUNTY</div>
+      <div class="stat-value" id="statValidators">3</div>
+      <div class="stat-label">VALIDATORS</div>
     </div>
   </div>
 
@@ -1336,26 +1366,40 @@ body {
       <div class="reward-card">
         <div class="reward-icon">🎯</div>
         <div class="reward-title">Task Creator</div>
-        <div class="reward-amount">1000 POI</div>
+        <div class="reward-amount">100 POI</div>
         <div class="reward-desc">Post a task (FREE) and earn POI</div>
       </div>
       <div class="reward-card">
         <div class="reward-icon">⚡</div>
         <div class="reward-title">Winner Miner</div>
-        <div class="reward-amount">500 POI</div>
+        <div class="reward-amount">50 POI</div>
         <div class="reward-desc">Win the consensus and earn POI</div>
       </div>
       <div class="reward-card">
         <div class="reward-icon">👥</div>
         <div class="reward-title">Participant</div>
-        <div class="reward-amount">100 POI</div>
+        <div class="reward-amount">10 POI</div>
         <div class="reward-desc">Submit a result and earn POI</div>
       </div>
       <div class="reward-card">
         <div class="reward-icon">✓</div>
         <div class="reward-title">Validator</div>
-        <div class="reward-amount">50 POI</div>
+        <div class="reward-amount">5 POI</div>
         <div class="reward-desc">Validate tasks and earn POI</div>
+      </div>
+    </div>
+    <div class="dynamic-info">
+      <div class="info-item">
+        <span class="info-label">Dynamic Validators:</span>
+        <span class="info-value" id="dynamicValidators">3</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Max Miners per Task:</span>
+        <span class="info-value" id="maxMiners">3</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">First-Come-First-Served:</span>
+        <span class="info-value">Yes</span>
       </div>
     </div>
   </div>
@@ -1564,12 +1608,14 @@ function renderTask(json) {
 async function loadStats() {
   try {
     const s = await readContract.get_stats();
-    document.getElementById('statTotal').textContent = s[0].toString();
-    document.getElementById('statOpen').textContent = s[1].toString();
-    document.getElementById('statMining').textContent = s[2].toString();
-    document.getElementById('statCompleted').textContent = s[3].toString();
-    document.getElementById('statMined').textContent = s[5].toString();
-    document.getElementById('statBounty').textContent = ethers.utils.formatEther(s[4]).slice(0,6);
+    document.getElementById('statTotal').textContent = s.total_tasks.toString();
+    document.getElementById('statOpen').textContent = s.open_tasks.toString();
+    document.getElementById('statMining').textContent = s.mining_tasks.toString();
+    document.getElementById('statCompleted').textContent = s.completed_tasks.toString();
+    document.getElementById('statMiners').textContent = s.total_miners.toString();
+    document.getElementById('statValidators').textContent = s.validator_count.toString();
+    document.getElementById('dynamicValidators').textContent = s.validator_count.toString();
+    document.getElementById('maxMiners').textContent = s.max_miners_per_task.toString();
   } catch(e) {}
 }
 
