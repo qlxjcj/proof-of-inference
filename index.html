@@ -1051,20 +1051,29 @@ body {
   border: 1px solid #ffaa00;
 }
 
+/* Reward Example */
+.reward-example {
+  margin-top: 24px;
+  padding: 20px;
+  background: rgba(0,255,136,0.05);
+  border: 1px solid var(--accent);
+}
+
 .info-header {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   letter-spacing: 2px;
-  color: #ffaa00;
+  color: var(--accent);
   margin-bottom: 16px;
 }
 
-.tie-break-info .info-item {
-  border-bottom: 1px solid rgba(255,170,0,0.1);
+.reward-example .info-item {
+  border-bottom: 1px solid rgba(0,255,136,0.1);
 }
 
-.tie-break-info .info-value {
-  color: #ffaa00;
+.reward-example .info-value {
+  color: var(--accent);
+  font-weight: 600;
 }
 </style>
 </head>
@@ -1478,59 +1487,48 @@ body {
         <span>Max per Task</span>
       </div>
       <div class="tier-row">
-        <span>< 5</span>
+        <span>< 10</span>
         <span>3</span>
-        <span>3</span>
-      </div>
-      <div class="tier-row">
-        <span>5-10</span>
-        <span>4</span>
-        <span>5</span>
-      </div>
-      <div class="tier-row">
-        <span>10-20</span>
-        <span>5</span>
-        <span>7</span>
-      </div>
-      <div class="tier-row">
-        <span>20-50</span>
-        <span>6</span>
         <span>10</span>
       </div>
       <div class="tier-row">
-        <span>50-100</span>
-        <span>7</span>
-        <span>15</span>
-      </div>
-      <div class="tier-row">
-        <span>100-200</span>
-        <span>8</span>
+        <span>10-30</span>
+        <span>5</span>
         <span>20</span>
       </div>
       <div class="tier-row">
-        <span>200-500</span>
-        <span>9</span>
-        <span>25</span>
-      </div>
-      <div class="tier-row">
-        <span>500+</span>
-        <span>10</span>
+        <span>30-100</span>
+        <span>7</span>
         <span>30</span>
       </div>
+      <div class="tier-row">
+        <span>100-300</span>
+        <span>10</span>
+        <span>50</span>
+      </div>
+      <div class="tier-row">
+        <span>300+</span>
+        <span>15</span>
+        <span>100</span>
+      </div>
     </div>
-    <div class="tie-break-info">
-      <div class="info-header">Tie-Break Rules</div>
+    <div class="reward-example">
+      <div class="info-header">Reward Distribution Example (10 miners)</div>
       <div class="info-item">
-        <span class="info-label">1. Reputation Score:</span>
-        <span class="info-value">Higher wins</span>
+        <span class="info-label">Winner:</span>
+        <span class="info-value">50 POI</span>
       </div>
       <div class="info-item">
-        <span class="info-label">2. Confidence Level:</span>
-        <span class="info-value">Higher wins</span>
+        <span class="info-label">Participants (9):</span>
+        <span class="info-value">10 POI each = 90 POI</span>
       </div>
       <div class="info-item">
-        <span class="info-label">3. Random Selection:</span>
-        <span class="info-value">If tied</span>
+        <span class="info-label">Validators (3):</span>
+        <span class="info-value">5 POI each = 15 POI</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Total Reward Pool:</span>
+        <span class="info-value">155 POI</span>
       </div>
     </div>
   </div>
