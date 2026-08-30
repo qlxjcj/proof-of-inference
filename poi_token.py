@@ -3,18 +3,21 @@
 POI Token - Proof of Inference ERC-20 Token
 
 Token Economics:
-- Total Supply: 1,000,000,000 POI (10 billion)
+- Total Supply: 1,000,000,000 POI (1 billion)
 - Distribution:
-  - 50% Mining Rewards (5B)
-  - 30% Task Creator Rewards (3B)
-  - 10% Team (1B, locked)
-  - 10% Ecosystem (1B)
+  - 5% Developers (50M)
+  - 10% Task Creators (100M)
+  - 20% Miners (200M)
+  - 65% Pool Rewards (650M)
 
-Reward Mechanism:
-- Task Creator: 1000 POI per task
-- Winner Miner: 500 POI
-- Participant Miner: 100 POI
-- Validator: 50 POI each
+Pool Release Mechanism:
+- First 5000 blocks: 65M POI
+- Every 5000 blocks: reduce 10%
+- Until pool exhausted
+
+Block Reward Distribution (1:2 ratio):
+- Task Creators: 1/3
+- Miners: 2/3
 """
 
 import json
@@ -50,16 +53,25 @@ class POIToken(gl.Contract):
     
     # Supply Limits
     max_supply: u256
-    mining_pool: u256
-    creator_pool: u256
-    team_pool: u256
-    ecosystem_pool: u256
     
-    # Distribution
-    mining_distributed: u256
+    # Distribution Pools
+    developer_pool: u256
+    creator_pool: u256
+    miner_pool: u256
+    reward_pool: u256
+    
+    # Distributed Amounts
+    developer_distributed: u256
     creator_distributed: u256
-    team_distributed: u256
-    ecosystem_distributed: u256
+    miner_distributed: u256
+    reward_distributed: u256
+    
+    # Block Reward Mechanism
+    current_block: u256
+    blocks_per_phase: u256
+    current_phase: u256
+    base_reward_per_block: u256
+    reward_decay_rate: u256  # 10% = 1000 (basis points)
     
     # Owner
     owner: str
@@ -69,19 +81,26 @@ class POIToken(gl.Contract):
         self.symbol = "POI"
         self.decimals = 18
         self.total_supply = 0
-        self.max_supply = 10000000000 * (10 ** 18)  # 10 billion
+        self.max_supply = 1000000000 * (10 ** 18)  # 1 billion
         
         # Pool allocations (in wei)
-        self.mining_pool = 5000000000 * (10 ** 18)   # 50%
-        self.creator_pool = 3000000000 * (10 ** 18)  # 30%
-        self.team_pool = 1000000000 * (10 ** 18)     # 10%
-        self.ecosystem_pool = 1000000000 * (10 ** 18) # 10%
+        self.developer_pool = 50000000 * (10 ** 18)    # 5%
+        self.creator_pool = 100000000 * (10 ** 18)     # 10%
+        self.miner_pool = 200000000 * (10 ** 18)       # 20%
+        self.reward_pool = 650000000 * (10 ** 18)      # 65%
         
         # Distributed amounts
-        self.mining_distributed = 0
+        self.developer_distributed = 0
         self.creator_distributed = 0
-        self.team_distributed = 0
-        self.ecosystem_distributed = 0
+        self.miner_distributed = 0
+        self.reward_distributed = 0
+        
+        # Block reward parameters
+        self.current_block = 0
+        self.blocks_per_phase = 5000
+        self.current_phase = 0
+        self.base_reward_per_block = 13000 * (10 ** 18)  # 13,000 POI per block
+        self.reward_decay_rate = 1000  # 10% in basis points (1000/10000)
         
         # Owner is the contract deployer
         self.owner = gl.message.sender_address.as_hex
@@ -95,56 +114,65 @@ class POIToken(gl.Contract):
         self.balances[to] = current_balance + amount
         self.total_supply += amount
 
+    def _get_current_reward_per_block(self) -> u256:
+        """Calculate current reward per block based on phase"""
+        phase = self.current_block // self.blocks_per_phase
+        if phase != self.current_phase:
+            self.current_phase = phase
+            # Reduce reward by 10% for each phase
+            self.base_reward_per_block = self.base_reward_per_block * 9000 // 10000
+        
+        return self.base_reward_per_block
+
     @gl.public.write
-    def mint_mining_reward(self, to: str, amount: u256) -> bool:
-        """Mint mining rewards (called by main contract)"""
+    def mint_block_reward(self, creator: str, miner: str, validator_count: int) -> bool:
+        """Mint block reward (called by main contract)"""
         if gl.message.sender_address.as_hex != self.owner:
             raise gl.vm.UserError("Only owner can mint")
         
-        if self.mining_distributed + amount > self.mining_pool:
-            raise gl.vm.UserError("Mining pool exhausted")
+        # Check if reward pool has enough
+        if self.reward_distributed >= self.reward_pool:
+            raise gl.vm.UserError("Reward pool exhausted")
         
-        self._mint(to, amount)
-        self.mining_distributed += amount
+        # Get current reward per block
+        reward_per_block = self._get_current_reward_per_block()
+        
+        # Calculate distribution (1:2 ratio)
+        creator_reward = reward_per_block // 3  # 1/3
+        miner_reward = reward_per_block * 2 // 3  # 2/3
+        
+        # Check if reward pool has enough for this block
+        remaining_pool = self.reward_pool - self.reward_distributed
+        if reward_per_block > remaining_pool:
+            reward_per_block = remaining_pool
+            creator_reward = reward_per_block // 3
+            miner_reward = reward_per_block * 2 // 3
+        
+        # Mint rewards
+        self._mint(creator, creator_reward)
+        self._mint(miner, miner_reward)
+        
+        # Update distributed amounts
+        self.creator_distributed += creator_reward
+        self.miner_distributed += miner_reward
+        self.reward_distributed += reward_per_block
+        
+        # Update block counter
+        self.current_block += 1
+        
         return True
 
     @gl.public.write
-    def mint_creator_reward(self, to: str, amount: u256) -> bool:
-        """Mint creator rewards (called by main contract)"""
+    def mint_developer_reward(self, to: str, amount: u256) -> bool:
+        """Mint developer rewards (owner only)"""
         if gl.message.sender_address.as_hex != self.owner:
             raise gl.vm.UserError("Only owner can mint")
         
-        if self.creator_distributed + amount > self.creator_pool:
-            raise gl.vm.UserError("Creator pool exhausted")
+        if self.developer_distributed + amount > self.developer_pool:
+            raise gl.vm.UserError("Developer pool exhausted")
         
         self._mint(to, amount)
-        self.creator_distributed += amount
-        return True
-
-    @gl.public.write
-    def mint_team_reward(self, to: str, amount: u256) -> bool:
-        """Mint team rewards (owner only)"""
-        if gl.message.sender_address.as_hex != self.owner:
-            raise gl.vm.UserError("Only owner can mint")
-        
-        if self.team_distributed + amount > self.team_pool:
-            raise gl.vm.UserError("Team pool exhausted")
-        
-        self._mint(to, amount)
-        self.team_distributed += amount
-        return True
-
-    @gl.public.write
-    def mint_ecosystem_reward(self, to: str, amount: u256) -> bool:
-        """Mint ecosystem rewards (owner only)"""
-        if gl.message.sender_address.as_hex != self.owner:
-            raise gl.vm.UserError("Only owner can mint")
-        
-        if self.ecosystem_distributed + amount > self.ecosystem_pool:
-            raise gl.vm.UserError("Ecosystem pool exhausted")
-        
-        self._mint(to, amount)
-        self.ecosystem_distributed += amount
+        self.developer_distributed += amount
         return True
 
     @gl.public.write
@@ -225,18 +253,32 @@ class POIToken(gl.Contract):
     def get_pools_info(self) -> dict:
         """Get pool distribution info"""
         return {
-            "mining_pool": str(self.mining_pool),
-            "mining_distributed": str(self.mining_distributed),
-            "mining_remaining": str(self.mining_pool - self.mining_distributed),
+            "developer_pool": str(self.developer_pool),
+            "developer_distributed": str(self.developer_distributed),
+            "developer_remaining": str(self.developer_pool - self.developer_distributed),
             "creator_pool": str(self.creator_pool),
             "creator_distributed": str(self.creator_distributed),
             "creator_remaining": str(self.creator_pool - self.creator_distributed),
-            "team_pool": str(self.team_pool),
-            "team_distributed": str(self.team_distributed),
-            "team_remaining": str(self.team_pool - self.team_distributed),
-            "ecosystem_pool": str(self.ecosystem_pool),
-            "ecosystem_distributed": str(self.ecosystem_distributed),
-            "ecosystem_remaining": str(self.ecosystem_pool - self.ecosystem_distributed),
+            "miner_pool": str(self.miner_pool),
+            "miner_distributed": str(self.miner_distributed),
+            "miner_remaining": str(self.miner_pool - self.miner_distributed),
+            "reward_pool": str(self.reward_pool),
+            "reward_distributed": str(self.reward_distributed),
+            "reward_remaining": str(self.reward_pool - self.reward_distributed),
+        }
+
+    @gl.public.view
+    def get_block_reward_info(self) -> dict:
+        """Get block reward information"""
+        current_reward = self._get_current_reward_per_block()
+        return {
+            "current_block": str(self.current_block),
+            "current_phase": str(self.current_phase),
+            "blocks_per_phase": str(self.blocks_per_phase),
+            "current_reward_per_block": str(current_reward),
+            "creator_reward_per_block": str(current_reward // 3),
+            "miner_reward_per_block": str(current_reward * 2 // 3),
+            "reward_decay_rate": str(self.reward_decay_rate),
         }
 
     @gl.public.write

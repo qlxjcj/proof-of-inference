@@ -2,11 +2,22 @@
 """
 Proof of Inference - AI Mining Protocol
 
-New Token Economics:
-- Task Creator: Free to post, receives 1000 POI
-- Winner Miner: Receives 500 POI
-- Participant Miner: Receives 100 POI
-- Each Validator: Receives 50 POI
+Token Economics:
+- Total Supply: 1,000,000,000 POI
+- Distribution:
+  - 5% Developers (50M)
+  - 10% Task Creators (100M)
+  - 20% Miners (200M)
+  - 65% Pool Rewards (650M)
+
+Block Reward Distribution (1:2 ratio):
+- Task Creators: 1/3
+- Miners: 2/3
+
+Miner Distribution:
+- Winner: 50% of miner reward
+- Participants: 30% of miner reward
+- Validators: 20% of miner reward
 """
 
 import json
@@ -92,19 +103,13 @@ class ProofOfInference(gl.Contract):
     tasks: TreeMap[str, str]
     submissions: TreeMap[str, str]
     miner_profiles: TreeMap[str, str]
-    active_miners: TreeMap[str, str]  # Track active miners
+    active_miners: TreeMap[str, str]
     task_count: u256
     total_mined: u256
-    total_miners: u256  # Total unique miners
+    total_miners: u256
     
     # POI Token reference
     poi_token: str
-    
-    # Reward amounts (in wei, 18 decimals)
-    CREATOR_REWARD: u256
-    WINNER_REWARD: u256
-    PARTICIPANT_REWARD: u256
-    VALIDATOR_REWARD: u256
 
     CATEGORIES = ("VERIFICATION", "DIAGNOSIS", "ANALYSIS", "CLASSIFICATION", "OTHER")
     STATUSES = ("OPEN", "MINING", "VERIFYING", "COMPLETED", "FAILED")
@@ -112,13 +117,7 @@ class ProofOfInference(gl.Contract):
     def __init__(self):
         self.total_mined = 0
         self.total_miners = 0
-        self.poi_token = ""  # Will be set after POI token deployment
-        
-        # Reward amounts (100, 50, 10, 5 POI with 18 decimals)
-        self.CREATOR_REWARD = 100 * (10 ** 18)
-        self.WINNER_REWARD = 50 * (10 ** 18)
-        self.PARTICIPANT_REWARD = 10 * (10 ** 18)
-        self.VALIDATOR_REWARD = 5 * (10 ** 18)
+        self.poi_token = ""
 
     def _get_validator_count(self) -> int:
         """Dynamic validator count based on total miners"""
@@ -148,21 +147,21 @@ class ProofOfInference(gl.Contract):
         else:
             return 100
 
+    def _distribute_block_reward(self, creator: str, winner: str, participants: list):
+        """Distribute block reward to creator and miners"""
+        if self.poi_token == "":
+            return
+        
+        # In production, this would call the POI token contract
+        # to mint block rewards
+        pass
+
     @gl.public.write
     def set_poi_token(self, token_address: str):
         """Set POI token contract address (owner only)"""
         if self.poi_token != "":
             raise gl.vm.UserError("POI token already set")
         self.poi_token = token_address
-
-    def _mint_poi(self, to: str, amount: u256, reward_type: str):
-        """Mint POI tokens via token contract"""
-        if self.poi_token == "":
-            return  # No token set, skip
-        
-        # In production, this would call the POI token contract
-        # For now, we'll track rewards in storage
-        pass
 
     @gl.public.write
     def submit_task(self, description: str, category: str, data_hash: str, deadline_hours: int = 24) -> str:
@@ -203,11 +202,6 @@ class ProofOfInference(gl.Contract):
             deadline=str(deadline_hours),
         )
         self.tasks[task_id] = json.dumps(task.__dict__)
-        
-        # Reward creator with POI (dynamic based on miner count, max 500 POI)
-        miner_count = task.get("miner_count", 0)
-        creator_reward = min(miner_count * 10, 500) * (10 ** 18)  # 10 POI per miner, max 500
-        self._mint_poi(task["creator"], creator_reward, "creator")
         
         return task_id
 
@@ -368,23 +362,15 @@ Respond ONLY in JSON:
         self.tasks[task_id] = json.dumps(task)
         self.total_mined += 1
 
-        # Reward winner with POI (dynamic based on miner count)
-        miner_count = task.get("miner_count", 0)
-        winner_reward = (100 + miner_count * 5) * (10 ** 18)  # 100 base + 5 per miner
-        self._mint_poi(winner, winner_reward, "winner")
-        
-        # Reward all participants with POI
+        # Get participants list
+        participants = []
         for key, val in self.submissions.items():
             if key.startswith(f"{task_id}:"):
                 sub = json.loads(val)
-                miner_addr = sub["miner"]
-                if miner_addr != winner:
-                    self._mint_poi(miner_addr, self.PARTICIPANT_REWARD, "participant")
-        
-        # Reward task creator (dynamic based on miner count, max 500 POI)
-        miner_count = task.get("miner_count", 0)
-        creator_reward = min(miner_count * 10, 500) * (10 ** 18)  # 10 POI per miner, max 500
-        self._mint_poi(task["creator"], creator_reward, "creator")
+                participants.append(sub["miner"])
+
+        # Distribute block rewards
+        self._distribute_block_reward(task["creator"], winner, participants)
 
         # Update miner profiles
         for key, val in self.submissions.items():
@@ -498,9 +484,7 @@ Respond ONLY in JSON:
     def get_reward_info(self) -> dict:
         """Get reward information"""
         return {
-            "creator_reward": str(self.CREATOR_REWARD),
-            "winner_reward": str(self.WINNER_REWARD),
-            "participant_reward": str(self.PARTICIPANT_REWARD),
-            "validator_reward": str(self.VALIDATOR_REWARD),
             "poi_token": self.poi_token,
+            "validator_count": self._get_validator_count(),
+            "max_miners_per_task": self._get_max_miners_per_task(),
         }

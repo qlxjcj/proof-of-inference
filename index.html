@@ -924,6 +924,202 @@ body {
   color: #ffaa00;
 }
 
+/* Token Distribution */
+.token-distribution {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+}
+
+.dist-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.dist-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.dist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+}
+
+.dist-color {
+  width: 4px;
+  height: 40px;
+  border-radius: 2px;
+}
+
+.dist-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.dist-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Block Reward */
+.block-reward {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: rgba(0,255,136,0.05);
+  border: 1px solid var(--accent);
+}
+
+.reward-ratio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.ratio-item {
+  text-align: center;
+  padding: 20px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  min-width: 150px;
+}
+
+.ratio-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.ratio-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.ratio-desc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.ratio-divider {
+  font-size: 32px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Miner Distribution */
+.miner-distribution {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: rgba(255,0,128,0.05);
+  border: 1px solid #ff0080;
+}
+
+.miner-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.miner-item {
+  text-align: center;
+  padding: 20px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+}
+
+.miner-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.miner-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.miner-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  color: #ff0080;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.miner-desc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Release Schedule */
+.release-schedule {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: rgba(255,170,0,0.05);
+  border: 1px solid #ffaa00;
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.schedule-item {
+  text-align: center;
+  padding: 16px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+}
+
+.schedule-phase {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #ffaa00;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.schedule-blocks {
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.schedule-reward {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.schedule-total {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #ffaa00;
+}
+
 .reward-icon {
   font-size: 32px;
   margin-bottom: 12px;
@@ -1459,102 +1655,121 @@ body {
   <div class="poi-section" id="rewards">
     <div class="section-header">
       <div class="section-icon">🪙</div>
-      <div class="section-title">POI Token Rewards</div>
+      <div class="section-title">POI Token Economics</div>
     </div>
-    <div class="rewards-grid">
-      <div class="reward-card">
-        <div class="reward-icon">🎯</div>
-        <div class="reward-title">Task Creator</div>
-        <div class="reward-amount">Max 500</div>
-        <div class="reward-desc">10 POI × miners (max 500)</div>
-      </div>
-      <div class="reward-card winner-card">
-        <div class="reward-icon">⚡</div>
-        <div class="reward-title">Winner Miner</div>
-        <div class="reward-amount">Dynamic</div>
-        <div class="reward-desc">100 base + 5 × miners count</div>
-      </div>
-      <div class="reward-card">
-        <div class="reward-icon">👥</div>
-        <div class="reward-title">Participant</div>
-        <div class="reward-amount">10 POI</div>
-        <div class="reward-desc">Submit a result and earn POI</div>
-      </div>
-      <div class="reward-card">
-        <div class="reward-icon">✓</div>
-        <div class="reward-title">Validator</div>
-        <div class="reward-amount">5 POI</div>
-        <div class="reward-desc">Validate tasks and earn POI</div>
-      </div>
-    </div>
-    <div class="dynamic-info">
-      <div class="info-item">
-        <span class="info-label">Dynamic Validators:</span>
-        <span class="info-value" id="dynamicValidators">3</span>
-      </div>
-      <div class="info-item">
-        <span class="info-label">Max Miners per Task:</span>
-        <span class="info-value" id="maxMiners">3</span>
-      </div>
-      <div class="info-item">
-        <span class="info-label">First-Come-First-Served:</span>
-        <span class="info-value">Yes</span>
+    
+    <!-- Token Distribution -->
+    <div class="token-distribution">
+      <div class="dist-header">Token Distribution (1 Billion POI)</div>
+      <div class="dist-grid">
+        <div class="dist-item">
+          <div class="dist-color" style="background: #00ff88;"></div>
+          <div class="dist-info">
+            <div class="dist-label">Developers</div>
+            <div class="dist-value">5% = 50M POI</div>
+          </div>
+        </div>
+        <div class="dist-item">
+          <div class="dist-color" style="background: #00ccff;"></div>
+          <div class="dist-info">
+            <div class="dist-label">Task Creators</div>
+            <div class="dist-value">10% = 100M POI</div>
+          </div>
+        </div>
+        <div class="dist-item">
+          <div class="dist-color" style="background: #ff0080;"></div>
+          <div class="dist-info">
+            <div class="dist-label">Miners</div>
+            <div class="dist-value">20% = 200M POI</div>
+          </div>
+        </div>
+        <div class="dist-item">
+          <div class="dist-color" style="background: #ffaa00;"></div>
+          <div class="dist-info">
+            <div class="dist-label">Pool Rewards</div>
+            <div class="dist-value">65% = 650M POI</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="tier-table">
-      <div class="tier-header">Dynamic Tier System</div>
-      <div class="tier-row tier-header-row">
-        <span>Miners</span>
-        <span>Validators</span>
-        <span>Max per Task</span>
-      </div>
-      <div class="tier-row">
-        <span>< 10</span>
-        <span>3</span>
-        <span>10</span>
-      </div>
-      <div class="tier-row">
-        <span>10-30</span>
-        <span>5</span>
-        <span>20</span>
-      </div>
-      <div class="tier-row">
-        <span>30-100</span>
-        <span>7</span>
-        <span>30</span>
-      </div>
-      <div class="tier-row">
-        <span>100-300</span>
-        <span>10</span>
-        <span>50</span>
-      </div>
-      <div class="tier-row">
-        <span>300+</span>
-        <span>15</span>
-        <span>100</span>
+
+    <!-- Block Reward -->
+    <div class="block-reward">
+      <div class="info-header">Block Reward Distribution (1:2 Ratio)</div>
+      <div class="reward-ratio">
+        <div class="ratio-item">
+          <div class="ratio-label">Task Creators</div>
+          <div class="ratio-value">1/3</div>
+          <div class="ratio-desc">4,333 POI/block</div>
+        </div>
+        <div class="ratio-divider">:</div>
+        <div class="ratio-item">
+          <div class="ratio-label">Miners</div>
+          <div class="ratio-value">2/3</div>
+          <div class="ratio-desc">8,667 POI/block</div>
+        </div>
       </div>
     </div>
-    <div class="reward-example">
-      <div class="info-header">Reward Distribution Example (10 miners)</div>
-      <div class="info-item">
-        <span class="info-label">Task Creator:</span>
-        <span class="info-value">10 × 10 = 100 POI (max 500)</span>
+
+    <!-- Miner Distribution -->
+    <div class="miner-distribution">
+      <div class="info-header">Miner Reward Distribution</div>
+      <div class="miner-grid">
+        <div class="miner-item">
+          <div class="miner-icon">🏆</div>
+          <div class="miner-label">Winner</div>
+          <div class="miner-value">50%</div>
+          <div class="miner-desc">4,333 POI</div>
+        </div>
+        <div class="miner-item">
+          <div class="miner-icon">👥</div>
+          <div class="miner-label">Participants</div>
+          <div class="miner-value">30%</div>
+          <div class="miner-desc">2,600 POI</div>
+        </div>
+        <div class="miner-item">
+          <div class="miner-icon">✓</div>
+          <div class="miner-label">Validators</div>
+          <div class="miner-value">20%</div>
+          <div class="miner-desc">1,733 POI</div>
+        </div>
       </div>
-      <div class="info-item">
-        <span class="info-label">Winner:</span>
-        <span class="info-value">100 + (10 × 5) = 150 POI</span>
-      </div>
-      <div class="info-item">
-        <span class="info-label">Participants (9):</span>
-        <span class="info-value">10 POI each = 90 POI</span>
-      </div>
-      <div class="info-item">
-        <span class="info-label">Validators (3):</span>
-        <span class="info-value">5 POI each = 15 POI</span>
-      </div>
-      <div class="info-item">
-        <span class="info-label">Total Reward Pool:</span>
-        <span class="info-value">355 POI</span>
+    </div>
+
+    <!-- Release Schedule -->
+    <div class="release-schedule">
+      <div class="info-header">Pool Release Schedule (Every 5000 blocks, -10%)</div>
+      <div class="schedule-grid">
+        <div class="schedule-item">
+          <div class="schedule-phase">Phase 1</div>
+          <div class="schedule-blocks">1-5000</div>
+          <div class="schedule-reward">13,000 POI/block</div>
+          <div class="schedule-total">65M POI</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-phase">Phase 2</div>
+          <div class="schedule-blocks">5001-10000</div>
+          <div class="schedule-reward">11,700 POI/block</div>
+          <div class="schedule-total">58.5M POI</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-phase">Phase 3</div>
+          <div class="schedule-blocks">10001-15000</div>
+          <div class="schedule-reward">10,530 POI/block</div>
+          <div class="schedule-total">52.6M POI</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-phase">Phase 4</div>
+          <div class="schedule-blocks">15001-20000</div>
+          <div class="schedule-reward">9,477 POI/block</div>
+          <div class="schedule-total">47.4M POI</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-phase">Phase 5</div>
+          <div class="schedule-blocks">20001-25000</div>
+          <div class="schedule-reward">8,529 POI/block</div>
+          <div class="schedule-total">42.6M POI</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1586,14 +1801,10 @@ body {
         <input class="form-input" id="dataHash" placeholder="QmXnnyufdzAWL5CqZ2RnSNgPbvCc1ALT73s6epPrRnZ1Xy">
       </div>
       <div class="form-group">
-        <label class="form-label">Bounty (ETH)</label>
-        <input class="form-input" id="bountyAmount" type="number" step="0.001" min="0.001" placeholder="0.01">
-      </div>
-      <div class="form-group">
         <label class="form-label">Deadline (hours)</label>
         <input class="form-input" id="deadlineHours" type="number" min="1" max="168" value="24">
       </div>
-      <button class="btn btn-primary" style="width:100%" id="submitTaskBtn">SUBMIT TASK</button>
+      <button class="btn btn-primary" style="width:100%" id="submitTaskBtn">SUBMIT TASK (FREE)</button>
       <div id="submitStatus" style="margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:11px;"></div>
     </div>
 
@@ -1797,17 +2008,15 @@ document.getElementById('submitTaskBtn').onclick = async () => {
   const desc = document.getElementById('taskDesc').value.trim();
   const cat = document.getElementById('taskCategory').value;
   const hash = document.getElementById('dataHash').value.trim();
-  const bounty = document.getElementById('bountyAmount').value;
   const deadline = parseInt(document.getElementById('deadlineHours').value) || 24;
   if (!desc||desc.length<10) return toast('Description min 10 chars','error');
   if (!hash) return toast('Data hash required','error');
-  if (!bounty||parseFloat(bounty)<=0) return toast('Bounty required','error');
   try {
     if (!contract) await connectWallet();
-    const tx = await contract.submit_task(desc,cat,hash,"0",deadline,{value:ethers.utils.parseEther(bounty)});
+    const tx = await contract.submit_task(desc,cat,hash,deadline);
     document.getElementById('submitStatus').innerHTML = `<span style="color:var(--accent)">TX: ${tx.hash.slice(0,16)}...</span>`;
     await tx.wait();
-    toast('Task submitted','success');
+    toast('Task submitted (FREE)!','success');
     loadStats(); loadTasks();
   } catch(e) { toast(e.reason||e.message,'error'); }
 };
