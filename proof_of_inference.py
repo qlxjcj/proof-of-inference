@@ -123,26 +123,42 @@ class ProofOfInference(gl.Contract):
     def _get_validator_count(self) -> int:
         """Dynamic validator count based on total miners"""
         miners = self.total_miners
-        if miners < 10:
+        if miners < 5:
             return 3
-        elif miners < 50:
+        elif miners < 10:
+            return 4
+        elif miners < 20:
             return 5
+        elif miners < 50:
+            return 6
         elif miners < 100:
             return 7
+        elif miners < 200:
+            return 8
+        elif miners < 500:
+            return 9
         else:
             return 10
 
     def _get_max_miners_per_task(self) -> int:
         """Max miners per task based on network size"""
         miners = self.total_miners
-        if miners < 10:
+        if miners < 5:
             return 3
-        elif miners < 50:
+        elif miners < 10:
             return 5
-        elif miners < 100:
+        elif miners < 20:
             return 7
-        else:
+        elif miners < 50:
             return 10
+        elif miners < 100:
+            return 15
+        elif miners < 200:
+            return 20
+        elif miners < 500:
+            return 25
+        else:
+            return 30
 
     @gl.public.write
     def set_poi_token(self, token_address: str):
