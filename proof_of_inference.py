@@ -204,8 +204,9 @@ class ProofOfInference(gl.Contract):
         )
         self.tasks[task_id] = json.dumps(task.__dict__)
         
-        # Reward creator with POI
-        self._mint_poi(sender.as_hex, self.CREATOR_REWARD, "creator")
+        # Reward creator with POI (dynamic based on miner count)
+        creator_reward = task.get("miner_count", 0) * 10 * (10 ** 18)
+        self._mint_poi(task["creator"], creator_reward, "creator")
         
         return task_id
 
@@ -376,6 +377,11 @@ Respond ONLY in JSON:
                 miner_addr = sub["miner"]
                 if miner_addr != winner:
                     self._mint_poi(miner_addr, self.PARTICIPANT_REWARD, "participant")
+        
+        # Reward task creator (dynamic based on miner count)
+        miner_count = task.get("miner_count", 0)
+        creator_reward = miner_count * 10 * (10 ** 18)  # 10 POI per miner
+        self._mint_poi(task["creator"], creator_reward, "creator")
 
         # Update miner profiles
         for key, val in self.submissions.items():
