@@ -147,13 +147,21 @@ class ProofOfInference(gl.Contract):
         else:
             return 100
 
-    def _distribute_block_reward(self, creator: str, winner: str, participants: list):
-        """Distribute block reward to creator and miners"""
+    def _distribute_block_reward(self, creator: str, winner: str, participants: list, task_miner_count: int):
+        """Distribute block reward to creator and miners based on miner count proportion"""
         if self.poi_token == "":
             return
         
         # In production, this would call the POI token contract
-        # to mint block rewards
+        # to mint block rewards based on the following logic:
+        #
+        # 1. Get total miners across all tasks in this block
+        # 2. Calculate proportion: task_miner_count / total_miners
+        # 3. Distribute:
+        #    - Creator: 1/3 of block reward × proportion
+        #    - Winner: 50% of 2/3 of block reward × proportion
+        #    - Participants: 30% of 2/3 of block reward × proportion
+        #    - Validators: 20% of 2/3 of block reward × proportion
         pass
 
     @gl.public.write
@@ -370,7 +378,7 @@ Respond ONLY in JSON:
                 participants.append(sub["miner"])
 
         # Distribute block rewards
-        self._distribute_block_reward(task["creator"], winner, participants)
+        self._distribute_block_reward(task["creator"], winner, participants, task.get("miner_count", 0))
 
         # Update miner profiles
         for key, val in self.submissions.items():
