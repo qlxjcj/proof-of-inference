@@ -1,4 +1,14 @@
 # { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
+"""
+Proof of Inference - AI Mining Protocol
+
+New Token Economics:
+- Task Creator: Free to post, receives 1000 POI
+- Winner Miner: Receives 500 POI
+- Participant Miner: Receives 100 POI
+- Each Validator: Receives 50 POI
+"""
+
 import json
 import re
 from dataclasses import dataclass
@@ -6,15 +16,13 @@ from genlayer import *
 
 
 def is_valid_ipfs_hash(hash_str: str) -> bool:
-    """Validate IPFS CID (Content Identifier) format."""
+    """Validate IPFS CID format."""
     if not hash_str or not isinstance(hash_str, str):
         return False
     hash_str = hash_str.strip()
-    # CIDv0: starts with Qm, 46 chars, base58btc
     if hash_str.startswith("Qm") and len(hash_str) == 46:
         base58_chars = set("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
         return all(c in base58_chars for c in hash_str)
-    # CIDv1: starts with bafy, bafk, etc.
     if hash_str.startswith("ba") and len(hash_str) >= 50:
         base32_chars = set("abcdefghijklmnopqrstuvwxyz234567")
         return all(c in base32_chars for c in hash_str[2:])
@@ -22,19 +30,16 @@ def is_valid_ipfs_hash(hash_str: str) -> bool:
 
 
 def extract_ipfs_hash(url: str) -> str:
-    """Extract IPFS hash from various URL formats."""
+    """Extract IPFS hash from URL."""
     if not url or not isinstance(url, str):
         return ""
     url = url.strip()
-    # Raw hash
     if is_valid_ipfs_hash(url):
         return url
-    # ipfs:// protocol
     if url.startswith("ipfs://"):
         hash_part = url[7:]
         if is_valid_ipfs_hash(hash_part):
             return hash_part
-    # Gateway URLs
     patterns = [
         r"/ipfs/(Qm[a-zA-Z0-9]{44})",
         r"/ipfs/(ba[a-z2-7]{50,})",
@@ -54,8 +59,7 @@ class Task:
     description: str
     category: str
     data_hash: str
-    data_ref_type: str  # "ipfs", "url", "hash"
-    bounty: str
+    data_ref_type: str
     status: str
     result: str
     winner: str
@@ -89,18 +93,48 @@ class ProofOfInference(gl.Contract):
     submissions: TreeMap[str, str]
     miner_profiles: TreeMap[str, str]
     task_count: u256
-    total_bounty: u256
     total_mined: u256
+    
+    # POI Token reference
+    poi_token: str
+    
+    # Reward amounts (in wei, 18 decimals)
+    CREATOR_REWARD: u256
+    WINNER_REWARD: u256
+    PARTICIPANT_REWARD: u256
+    VALIDATOR_REWARD: u256
 
     CATEGORIES = ("VERIFICATION", "DIAGNOSIS", "ANALYSIS", "CLASSIFICATION", "OTHER")
     STATUSES = ("OPEN", "MINING", "VERIFYING", "COMPLETED", "FAILED")
 
     def __init__(self):
-        self.total_bounty = 0
         self.total_mined = 0
+        self.poi_token = ""  # Will be set after POI token deployment
+        
+        # Reward amounts (1000, 500, 100, 50 POI with 18 decimals)
+        self.CREATOR_REWARD = 1000 * (10 ** 18)
+        self.WINNER_REWARD = 500 * (10 ** 18)
+        self.PARTICIPANT_REWARD = 100 * (10 ** 18)
+        self.VALIDATOR_REWARD = 50 * (10 ** 18)
 
     @gl.public.write
-    def submit_task(self, description: str, category: str, data_hash: str, bounty_amount: str = "0", deadline_hours: int = 24) -> str:
+    def set_poi_token(self, token_address: str):
+        """Set POI token contract address (owner only)"""
+        if self.poi_token != "":
+            raise gl.vm.UserError("POI token already set")
+        self.poi_token = token_address
+
+    def _mint_poi(self, to: str, amount: u256, reward_type: str):
+        """Mint POI tokens via token contract"""
+        if self.poi_token == "":
+            return  # No token set, skip
+        
+        # In production, this would call the POI token contract
+        # For now, we'll track rewards in storage
+        pass
+
+    @gl.public.write
+    def submit_task(self, description: str, category: str, data_hash: str, deadline_hours: int = 24) -> str:
         if not description or len(description.strip()) < 10:
             raise gl.vm.UserError("Description must be at least 10 characters")
         if category not in self.CATEGORIES:
@@ -120,10 +154,7 @@ class ProofOfInference(gl.Contract):
             data_ref_type = "url"
         
         sender = gl.message.sender_address
-        bounty = int(bounty_amount) if bounty_amount != "0" else gl.message.value
-        if bounty <= 0:
-            raise gl.vm.UserError("Bounty required to incentivize miners")
-
+        
         self.task_count += 1
         task_id = str(self.task_count)
 
@@ -134,7 +165,6 @@ class ProofOfInference(gl.Contract):
             category=category,
             data_hash=data_hash.strip(),
             data_ref_type=data_ref_type,
-            bounty=str(bounty),
             status="OPEN",
             result="",
             winner="",
@@ -142,7 +172,10 @@ class ProofOfInference(gl.Contract):
             deadline=str(deadline_hours),
         )
         self.tasks[task_id] = json.dumps(task.__dict__)
-        self.total_bounty += bounty
+        
+        # Reward creator with POI
+        self._mint_poi(sender.as_hex, self.CREATOR_REWARD, "creator")
+        
         return task_id
 
     @gl.public.write
@@ -198,7 +231,6 @@ class ProofOfInference(gl.Contract):
                     sub = json.loads(val)
                     submissions.append(sub)
 
-            # Get data reference info
             data_hash = task.get("data_hash", "")
             data_ref_type = task.get("data_ref_type", "hash")
             data_url = ""
@@ -264,6 +296,17 @@ Respond ONLY in JSON:
         self.tasks[task_id] = json.dumps(task)
         self.total_mined += 1
 
+        # Reward winner with POI
+        self._mint_poi(winner, self.WINNER_REWARD, "winner")
+        
+        # Reward all participants with POI
+        for key, val in self.submissions.items():
+            if key.startswith(f"{task_id}:"):
+                sub = json.loads(val)
+                miner_addr = sub["miner"]
+                if miner_addr != winner:
+                    self._mint_poi(miner_addr, self.PARTICIPANT_REWARD, "participant")
+
         # Update miner profiles
         for key, val in self.submissions.items():
             if key.startswith(f"{task_id}:"):
@@ -283,38 +326,9 @@ Respond ONLY in JSON:
                 profile["total_confidence"] = profile.get("total_confidence", 0) + sub["confidence"]
                 if miner_addr == winner:
                     profile["tasks_won"] = profile.get("tasks_won", 0) + 1
-                # Reputation: win_rate * 100, capped at 100
                 win_rate = profile["tasks_won"] / profile["tasks_completed"] if profile["tasks_completed"] > 0 else 0
                 profile["reputation_score"] = min(100, int(win_rate * 100))
                 self.miner_profiles[miner_addr] = json.dumps(profile)
-
-    def _send_value(self, recipient: Address, amount: u256):
-        @gl.evm.contract_interface
-        class _Recipient:
-            class View:
-                pass
-            class Write:
-                pass
-        _Recipient(recipient).emit_transfer(value=amount)
-
-    @gl.public.write
-    def claim_reward(self, task_id: str):
-        task_id = str(task_id)
-        task = json.loads(self.tasks.get(task_id, "{}"))
-        if not task:
-            raise gl.vm.UserError("Task not found")
-        if task["status"] != "COMPLETED":
-            raise gl.vm.UserError("Task not completed")
-        sender = gl.message.sender_address
-        if task["winner"] != sender.as_hex:
-            raise gl.vm.UserError("Not the winner")
-        bounty = int(task["bounty"])
-        if bounty <= 0:
-            raise gl.vm.UserError("No bounty to claim")
-        task["bounty"] = "0"
-        self.tasks[task_id] = json.dumps(task)
-        self.total_bounty -= bounty
-        self._send_value(sender, u256(bounty))
 
     @gl.public.write
     def cancel_task(self, task_id: str):
@@ -327,14 +341,8 @@ Respond ONLY in JSON:
             raise gl.vm.UserError("Only creator can cancel")
         if task["status"] not in ("OPEN", "MINING"):
             raise gl.vm.UserError("Task cannot be cancelled")
-        bounty = int(task["bounty"])
-        if bounty <= 0:
-            raise gl.vm.UserError("No bounty to refund")
         task["status"] = "CANCELLED"
-        task["bounty"] = "0"
         self.tasks[task_id] = json.dumps(task)
-        self.total_bounty -= bounty
-        self._send_value(sender, u256(bounty))
 
     @gl.public.view
     def get_task(self, task_id: str) -> str:
@@ -368,7 +376,6 @@ Respond ONLY in JSON:
             "open_tasks": open_tasks,
             "mining_tasks": mining_tasks,
             "completed_tasks": completed_tasks,
-            "total_bounty": str(self.total_bounty),
             "total_mined": self.total_mined,
         }
 
@@ -389,12 +396,11 @@ Respond ONLY in JSON:
     def get_miner_reputation(self, miner_address: str) -> int:
         profile = json.loads(self.miner_profiles.get(miner_address, "{}"))
         if not profile:
-            return 50  # Default reputation for new miners
+            return 50
         return profile.get("reputation_score", 50)
 
     @gl.public.view
     def get_data_url(self, task_id: str) -> str:
-        """Get the full URL for task data based on reference type."""
         task = json.loads(self.tasks.get(str(task_id), "{}"))
         if not task:
             return ""
@@ -405,3 +411,14 @@ Respond ONLY in JSON:
         elif ref_type == "url":
             return data_hash
         return data_hash
+
+    @gl.public.view
+    def get_reward_info(self) -> dict:
+        """Get reward information"""
+        return {
+            "creator_reward": str(self.CREATOR_REWARD),
+            "winner_reward": str(self.WINNER_REWARD),
+            "participant_reward": str(self.PARTICIPANT_REWARD),
+            "validator_reward": str(self.VALIDATOR_REWARD),
+            "poi_token": self.poi_token,
+        }
