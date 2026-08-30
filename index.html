@@ -1042,6 +1042,30 @@ body {
   text-align: center;
   color: var(--accent);
 }
+
+/* Tie-Break Info */
+.tie-break-info {
+  margin-top: 24px;
+  padding: 20px;
+  background: rgba(255,170,0,0.05);
+  border: 1px solid #ffaa00;
+}
+
+.info-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #ffaa00;
+  margin-bottom: 16px;
+}
+
+.tie-break-info .info-item {
+  border-bottom: 1px solid rgba(255,170,0,0.1);
+}
+
+.tie-break-info .info-value {
+  color: #ffaa00;
+}
 </style>
 </head>
 <body>
@@ -1492,6 +1516,21 @@ body {
         <span>500+</span>
         <span>10</span>
         <span>30</span>
+      </div>
+    </div>
+    <div class="tie-break-info">
+      <div class="info-header">Tie-Break Rules</div>
+      <div class="info-item">
+        <span class="info-label">1. Reputation Score:</span>
+        <span class="info-value">Higher wins</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">2. Confidence Level:</span>
+        <span class="info-value">Higher wins</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">3. Random Selection:</span>
+        <span class="info-value">If tied</span>
       </div>
     </div>
   </div>

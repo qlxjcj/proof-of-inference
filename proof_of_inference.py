@@ -342,10 +342,35 @@ Respond ONLY in JSON:
             raise gl.vm.UserError("Verification failed")
 
         winner = verdict.get("winner", "")
+        
+        # Handle tie: if no clear winner, select based on reputation and confidence
         if not winner:
-            task["status"] = "FAILED"
-            self.tasks[task_id] = json.dumps(task)
-            raise gl.vm.UserError("No winner determined")
+            # Get all submissions for this task
+            task_submissions = []
+            for key, val in self.submissions.items():
+                if key.startswith(f"{task_id}:"):
+                    sub = json.loads(val)
+                    task_submissions.append(sub)
+            
+            if not task_submissions:
+                task["status"] = "FAILED"
+                self.tasks[task_id] = json.dumps(task)
+                raise gl.vm.UserError("No submissions found")
+            
+            # Sort by: 1) reputation score (desc), 2) confidence (desc)
+            def get_tie_breaker(sub):
+                miner_addr = sub["miner"]
+                profile = json.loads(self.miner_profiles.get(miner_addr, "{}"))
+                reputation = profile.get("reputation_score", 50)
+                confidence = sub.get("confidence", 0)
+                return (-reputation, -confidence)  # Negative for descending sort
+            
+            task_submissions.sort(key=get_tie_breaker)
+            winner = task_submissions[0]["miner"]
+            
+            # Mark as tie-break winner in verdict
+            verdict["tie_break"] = True
+            verdict["tie_break_reason"] = "Selected based on reputation and confidence"
 
         task["status"] = "COMPLETED"
         task["result"] = verdict.get("consensus_result", "")
