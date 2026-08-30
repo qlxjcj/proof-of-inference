@@ -367,8 +367,10 @@ Respond ONLY in JSON:
         self.tasks[task_id] = json.dumps(task)
         self.total_mined += 1
 
-        # Reward winner with POI
-        self._mint_poi(winner, self.WINNER_REWARD, "winner")
+        # Reward winner with POI (dynamic based on miner count)
+        miner_count = task.get("miner_count", 0)
+        winner_reward = (100 + miner_count * 5) * (10 ** 18)  # 100 base + 5 per miner
+        self._mint_poi(winner, winner_reward, "winner")
         
         # Reward all participants with POI
         for key, val in self.submissions.items():

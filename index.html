@@ -902,6 +902,28 @@ body {
   box-shadow: 0 0 30px var(--glow);
 }
 
+.reward-card.winner-card {
+  border-color: #ffaa00;
+  background: rgba(255,170,0,0.05);
+}
+
+.reward-card.winner-card:hover {
+  border-color: #ffcc00;
+  box-shadow: 0 0 30px rgba(255,170,0,0.2);
+}
+
+.reward-card.winner-card .reward-icon {
+  color: #ffaa00;
+}
+
+.reward-card.winner-card .reward-title {
+  color: #ffaa00;
+}
+
+.reward-card.winner-card .reward-amount {
+  color: #ffaa00;
+}
+
 .reward-icon {
   font-size: 32px;
   margin-bottom: 12px;
@@ -1446,11 +1468,11 @@ body {
         <div class="reward-amount">Dynamic</div>
         <div class="reward-desc">10 POI × miners count</div>
       </div>
-      <div class="reward-card">
+      <div class="reward-card winner-card">
         <div class="reward-icon">⚡</div>
         <div class="reward-title">Winner Miner</div>
-        <div class="reward-amount">50 POI</div>
-        <div class="reward-desc">Win the consensus and earn POI</div>
+        <div class="reward-amount">Dynamic</div>
+        <div class="reward-desc">100 base + 5 × miners count</div>
       </div>
       <div class="reward-card">
         <div class="reward-icon">👥</div>
@@ -1520,7 +1542,7 @@ body {
       </div>
       <div class="info-item">
         <span class="info-label">Winner:</span>
-        <span class="info-value">50 POI</span>
+        <span class="info-value">100 + (10 × 5) = 150 POI</span>
       </div>
       <div class="info-item">
         <span class="info-label">Participants (9):</span>
@@ -1532,7 +1554,7 @@ body {
       </div>
       <div class="info-item">
         <span class="info-label">Total Reward Pool:</span>
-        <span class="info-value">255 POI</span>
+        <span class="info-value">355 POI</span>
       </div>
     </div>
   </div>
