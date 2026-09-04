@@ -6,18 +6,14 @@ Token Economics:
 - Total Supply: 1,000,000,000 POI (1 billion)
 - Distribution:
   - 5% Developers (50M)
-  - 10% Task Creators (100M)
-  - 20% Miners (200M)
-  - 65% Pool Rewards (650M)
+  - 30% Miners (300M)
+  - 65% Pool Rewards (650M) - includes task creator rewards + extra miner rewards
 
-Pool Release Mechanism:
-- First 5000 blocks: 65M POI
-- Every 5000 blocks: reduce 10%
-- Until pool exhausted
+Block Reward: 13,000 POI/block (Phase 1), decreasing 10% every 5000 blocks
 
-Block Reward Distribution (1:2 ratio):
-- Task Creators: 1/3
-- Miners: 2/3
+Allocation per block:
+- Task Creator: Based on validator tier (100-1500 POI)
+- Miners: Remaining block reward (split 50% winner, 30% participants, 20% validators)
 """
 
 import json
@@ -56,13 +52,11 @@ class POIToken(gl.Contract):
     
     # Distribution Pools
     developer_pool: u256
-    creator_pool: u256
     miner_pool: u256
     reward_pool: u256
     
     # Distributed Amounts
     developer_distributed: u256
-    creator_distributed: u256
     miner_distributed: u256
     reward_distributed: u256
     
@@ -85,13 +79,11 @@ class POIToken(gl.Contract):
         
         # Pool allocations (in wei)
         self.developer_pool = 50000000 * (10 ** 18)    # 5%
-        self.creator_pool = 100000000 * (10 ** 18)     # 10%
-        self.miner_pool = 200000000 * (10 ** 18)       # 20%
+        self.miner_pool = 300000000 * (10 ** 18)       # 30%
         self.reward_pool = 650000000 * (10 ** 18)      # 65%
         
         # Distributed amounts
         self.developer_distributed = 0
-        self.creator_distributed = 0
         self.miner_distributed = 0
         self.reward_distributed = 0
         
@@ -124,8 +116,21 @@ class POIToken(gl.Contract):
         
         return self.base_reward_per_block
 
+    def _get_creator_reward_by_tier(self, validator_count: int) -> u256:
+        """Get creator reward based on validator count tier"""
+        if validator_count < 10:
+            return 100 * (10 ** 18)  # 100 POI
+        elif validator_count < 30:
+            return 200 * (10 ** 18)  # 200 POI
+        elif validator_count < 100:
+            return 400 * (10 ** 18)  # 400 POI
+        elif validator_count < 300:
+            return 800 * (10 ** 18)  # 800 POI
+        else:
+            return 1500 * (10 ** 18)  # 1500 POI
+
     @gl.public.write
-    def mint_block_reward(self, creator: str, miner: str, validator_count: int) -> bool:
+    def mint_block_reward(self, creator: str, winner: str, participants: list, validator_count: int) -> bool:
         """Mint block reward (called by main contract)"""
         if gl.message.sender_address.as_hex != self.owner:
             raise gl.vm.UserError("Only owner can mint")
@@ -137,24 +142,41 @@ class POIToken(gl.Contract):
         # Get current reward per block
         reward_per_block = self._get_current_reward_per_block()
         
-        # Calculate distribution (1:2 ratio)
-        creator_reward = reward_per_block // 3  # 1/3
-        miner_reward = reward_per_block * 2 // 3  # 2/3
-        
         # Check if reward pool has enough for this block
         remaining_pool = self.reward_pool - self.reward_distributed
         if reward_per_block > remaining_pool:
             reward_per_block = remaining_pool
-            creator_reward = reward_per_block // 3
-            miner_reward = reward_per_block * 2 // 3
+        
+        # Calculate creator reward based on tier
+        creator_reward = self._get_creator_reward_by_tier(validator_count)
+        if creator_reward > reward_per_block:
+            creator_reward = reward_per_block
+        
+        # Calculate miner pool (remaining after creator)
+        miner_pool = reward_per_block - creator_reward
+        
+        # Distribute miner pool: 50% winner, 30% participants, 20% validators
+        winner_reward = miner_pool * 50 // 100
+        participant_pool = miner_pool * 30 // 100
+        validator_pool = miner_pool * 20 // 100
+        
+        # Calculate per-participant reward
+        participant_count = len(participants) if participants else 1
+        participant_reward_each = participant_pool // participant_count
+        
+        # Calculate per-validator reward
+        validator_reward_each = validator_pool // validator_count if validator_count > 0 else 0
         
         # Mint rewards
         self._mint(creator, creator_reward)
-        self._mint(miner, miner_reward)
+        self._mint(winner, winner_reward)
+        
+        # Mint to participants
+        if participants:
+            for participant in participants:
+                self._mint(participant, participant_reward_each)
         
         # Update distributed amounts
-        self.creator_distributed += creator_reward
-        self.miner_distributed += miner_reward
         self.reward_distributed += reward_per_block
         
         # Update block counter
@@ -173,6 +195,19 @@ class POIToken(gl.Contract):
         
         self._mint(to, amount)
         self.developer_distributed += amount
+        return True
+
+    @gl.public.write
+    def mint_miner_reward(self, to: str, amount: u256) -> bool:
+        """Mint miner rewards (owner only)"""
+        if gl.message.sender_address.as_hex != self.owner:
+            raise gl.vm.UserError("Only owner can mint")
+        
+        if self.miner_distributed + amount > self.miner_pool:
+            raise gl.vm.UserError("Miner pool exhausted")
+        
+        self._mint(to, amount)
+        self.miner_distributed += amount
         return True
 
     @gl.public.write
@@ -256,9 +291,6 @@ class POIToken(gl.Contract):
             "developer_pool": str(self.developer_pool),
             "developer_distributed": str(self.developer_distributed),
             "developer_remaining": str(self.developer_pool - self.developer_distributed),
-            "creator_pool": str(self.creator_pool),
-            "creator_distributed": str(self.creator_distributed),
-            "creator_remaining": str(self.creator_pool - self.creator_distributed),
             "miner_pool": str(self.miner_pool),
             "miner_distributed": str(self.miner_distributed),
             "miner_remaining": str(self.miner_pool - self.miner_distributed),
@@ -276,9 +308,14 @@ class POIToken(gl.Contract):
             "current_phase": str(self.current_phase),
             "blocks_per_phase": str(self.blocks_per_phase),
             "current_reward_per_block": str(current_reward),
-            "creator_reward_per_block": str(current_reward // 3),
-            "miner_reward_per_block": str(current_reward * 2 // 3),
             "reward_decay_rate": str(self.reward_decay_rate),
+            "creator_tiers": {
+                "lt_10": "100 POI",
+                "10_30": "200 POI",
+                "30_100": "400 POI",
+                "100_300": "800 POI",
+                "gt_300": "1500 POI",
+            }
         }
 
     @gl.public.write

@@ -6,18 +6,14 @@ Token Economics:
 - Total Supply: 1,000,000,000 POI
 - Distribution:
   - 5% Developers (50M)
-  - 10% Task Creators (100M)
-  - 20% Miners (200M)
-  - 65% Pool Rewards (650M)
+  - 30% Miners (300M)
+  - 65% Pool Rewards (650M) - includes task creator rewards + extra miner rewards
 
-Block Reward Distribution (1:2 ratio):
-- Task Creators: 1/3
-- Miners: 2/3
+Block Reward: 13,000 POI/block (Phase 1), decreasing 10% every 5000 blocks
 
-Miner Distribution:
-- Winner: 50% of miner reward
-- Participants: 30% of miner reward
-- Validators: 20% of miner reward
+Allocation per block:
+- Task Creator: Based on validator tier (100-1500 POI)
+- Miners: Remaining block reward (split 50% winner, 30% participants, 20% validators)
 """
 
 import json
@@ -147,21 +143,27 @@ class ProofOfInference(gl.Contract):
         else:
             return 100
 
-    def _distribute_block_reward(self, creator: str, winner: str, participants: list, task_miner_count: int):
-        """Distribute block reward to creator and miners based on miner count proportion"""
+    def _distribute_block_reward(self, creator: str, winner: str, participants: list, validator_count: int):
+        """Distribute block reward to creator and miners"""
         if self.poi_token == "":
             return
         
         # In production, this would call the POI token contract
         # to mint block rewards based on the following logic:
         #
-        # 1. Get total miners across all tasks in this block
-        # 2. Calculate proportion: task_miner_count / total_miners
-        # 3. Distribute:
-        #    - Creator: 1/3 of block reward × proportion
-        #    - Winner: 50% of 2/3 of block reward × proportion
-        #    - Participants: 30% of 2/3 of block reward × proportion
-        #    - Validators: 20% of 2/3 of block reward × proportion
+        # 1. Creator reward based on validator tier:
+        #    - < 10 validators: 100 POI
+        #    - 10-30 validators: 200 POI
+        #    - 30-100 validators: 400 POI
+        #    - 100-300 validators: 800 POI
+        #    - 300+ validators: 1500 POI
+        #
+        # 2. Miner pool = block reward - creator reward
+        #
+        # 3. Miner distribution:
+        #    - Winner: 50%
+        #    - Participants: 30%
+        #    - Validators: 20%
         pass
 
     @gl.public.write
